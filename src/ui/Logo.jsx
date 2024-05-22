@@ -17,8 +17,8 @@ const Name = styled.p`
   font-size: 2.5rem;
   font-family: "Poetsen One", sans-serif;
   position: absolute;
-  left: 25%;
   top: 80%;
+  width: 100%;
 `;
 
 function Logo() {
