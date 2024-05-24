@@ -37,7 +37,7 @@ const Discount = styled.div`
   color: var(--color-green-700);
 `;
 
-function CabinRow({ cabin }) {
+function CabinRow({ cabin, listId }) {
   const { isCreating, createCabin } = useCreateCabin();
   const { isDeleting, deleteCabin } = useDeleteCabin();
 
@@ -76,7 +76,7 @@ function CabinRow({ cabin }) {
       <div>
         <Modal>
           <Menus.Menu>
-            <Menus.Toggle disabled={isCreating} id={cabinId}></Menus.Toggle>
+            <Menus.Toggle disabled={isCreating} id={cabinId} />
             <Menus.List id={cabinId}>
               <Menus.Button
                 onClick={handleDuplicateCabin}

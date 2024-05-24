@@ -28,3 +28,16 @@ export const formatCurrency = (value) =>
   new Intl.NumberFormat("en", { style: "currency", currency: "USD" }).format(
     value
   );
+
+export function mergeRefs(...inputRefs) {
+  return (ref) => {
+    inputRefs.forEach((inputRef) => {
+      if (!inputRef) return;
+      if (typeof inputRef === "function") {
+        inputRef(ref);
+      } else {
+        inputRef.current = ref;
+      }
+    });
+  };
+}

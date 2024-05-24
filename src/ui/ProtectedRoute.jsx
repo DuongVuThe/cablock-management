@@ -9,6 +9,7 @@ const FullPage = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 `;
 
 function ProtectedRoute({ children }) {

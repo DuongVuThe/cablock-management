@@ -7,6 +7,7 @@ export function useCloseOnClickOutside(handler, listenCapturing = true) {
     function () {
       function handleClickOutside(e) {
         if (ref.current && !ref.current.contains(e.target)) {
+          console.log("click outside");
           handler();
         }
       }

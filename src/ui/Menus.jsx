@@ -1,8 +1,8 @@
-import { createContext, useContext, useState } from "react";
-import { createPortal } from "react-dom";
+import { createContext, useContext, useEffect, useState } from "react";
 import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
 import { useCloseOnClickOutside } from "../hooks/useCloseOnClickOutside";
+import { autoUpdate, computePosition } from "@floating-ui/react";
 
 const Menu = styled.div`
   display: flex;
@@ -30,14 +30,9 @@ const StyledToggle = styled.button`
 `;
 
 const StyledList = styled.ul`
-  position: fixed;
-
   background-color: var(--color-grey-0);
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-md);
-
-  right: ${(props) => props.position.x}px;
-  top: ${(props) => props.position.y}px;
 `;
 
 const StyledButton = styled.button`
@@ -69,51 +64,78 @@ const MenusContext = createContext();
 
 function Menus({ children }) {
   const [openId, setOpenId] = useState("");
-  const [position, setPosition] = useState(null);
   const close = () => setOpenId("");
   const open = setOpenId;
 
+  const isOpen = openId !== "";
+
+  useEffect(
+    function () {
+      const toggle = document.querySelector(`.toggle-${openId}`);
+      const float = document.querySelector(`.float-${openId}`);
+
+      if (isOpen && toggle && float) {
+        const cleanup = autoUpdate(toggle, float, async function () {
+          const computed = await computePosition(toggle, float, {
+            placement: "bottom-end",
+          });
+
+          Object.assign(float.style, {
+            left: `${computed.x}px`,
+            top: `${computed.y + 8}px`,
+          });
+        });
+        return cleanup;
+      }
+    },
+    [isOpen, openId]
+  );
+
   return (
-    <MenusContext.Provider
-      value={{ openId, close, open, position, setPosition }}
-    >
+    <MenusContext.Provider value={{ openId, close, open }}>
       {children}
     </MenusContext.Provider>
   );
 }
 
 function Toggle({ id }) {
-  const { openId, close, open, setPosition } = useContext(MenusContext);
+  const { openId, close, open } = useContext(MenusContext);
 
   function handleClick(e) {
     e.stopPropagation();
-    const rect = e.target.closest("button").getBoundingClientRect();
-    setPosition({
-      x: window.innerWidth - rect.width - rect.x,
-      y: rect.y + rect.height + 8,
-    });
+    console.log("click");
 
     openId === "" || openId !== id ? open(id) : close();
   }
 
   return (
     <StyledToggle onClick={handleClick}>
-      <HiEllipsisVertical />
+      <div className={`toggle-${id}`}>
+        <HiEllipsisVertical />
+      </div>
     </StyledToggle>
   );
 }
 
 function List({ id, children }) {
-  const { openId, position, close } = useContext(MenusContext);
+  const { openId, close } = useContext(MenusContext);
   const ref = useCloseOnClickOutside(close, false);
 
   if (openId === "" || openId !== id) return null;
 
-  return createPortal(
-    <StyledList ref={ref} position={position}>
-      {children}
-    </StyledList>,
-    document.body
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: "0px",
+        left: "0px",
+        width: "max-content",
+        zIndex: 99,
+      }}
+      className={`float-${id}`}
+    >
+      <StyledList ref={ref}>{children}</StyledList>
+    </div>
   );
 }
 
