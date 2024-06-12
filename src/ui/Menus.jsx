@@ -103,7 +103,6 @@ function Toggle({ id }) {
 
   function handleClick(e) {
     e.stopPropagation();
-    console.log("click");
 
     openId === "" || openId !== id ? open(id) : close();
   }

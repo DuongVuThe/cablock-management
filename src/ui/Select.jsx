@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import styled from "styled-components";
 
 const StyledSelect = styled.select`
@@ -8,15 +9,23 @@ const StyledSelect = styled.select`
       props.type === "white"
         ? "var(--color-grey-100)"
         : "var(--color-grey-300)"};
+  /* width: 25rem; */
+
   border-radius: var(--border-radius-sm);
   background-color: var(--color-grey-0);
   font-weight: 500;
   box-shadow: var(--shadow-sm);
 `;
 
-function Select({ options, value, onChange, ...props }) {
+const Select = forwardRef(function Select(props, ref) {
+  const { value, onChange, options, field, ...otherProps } = props;
   return (
-    <StyledSelect onChange={onChange} {...props} value={value}>
+    <StyledSelect {...otherProps} value={value} onChange={onChange} ref={ref}>
+      {field && (
+        <option hidden value={null}>
+          --Please select {field}--
+        </option>
+      )}
       {options.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}
@@ -24,6 +33,6 @@ function Select({ options, value, onChange, ...props }) {
       ))}
     </StyledSelect>
   );
-}
+});
 
 export default Select;
