@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const Tag = styled.span`
   width: fit-content;
@@ -11,6 +11,20 @@ const Tag = styled.span`
   /* Make these dynamic, based on the received prop */
   color: var(--color-${(props) => props.type}-700);
   background-color: var(--color-${(props) => props.type}-100);
+
+  ${(props) =>
+    props.role &&
+    css`
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.4rem;
+      font-family: "Sono";
+      &:hover {
+        background-color: var(--color-red-100);
+        cursor: pointer;
+      }
+    `}
 `;
 
 export default Tag;

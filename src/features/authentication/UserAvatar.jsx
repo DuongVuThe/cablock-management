@@ -11,7 +11,7 @@ const StyledUserAvatar = styled.div`
   color: var(--color-grey-600);
 `;
 
-const Avatar = styled.img`
+export const Avatar = styled.img`
   display: block;
   width: 4rem;
   width: 3.6rem;

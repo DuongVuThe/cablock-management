@@ -1,19 +1,44 @@
 import supabase, { supabaseUrl } from "./supabase";
 
-export async function signup({ fullName, email, password }) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { fullName, avatar: "" } },
-  });
+export async function signup({ fullName, email, password, role }) {
+  // An inelegant way to prevent loss of current session without using supabase service_key...
+  const { data: currentSession } = await supabase.auth.getSession();
 
-  if (error) throw new Error(error.message);
+  const { data: userData, error: createUserError } = await supabase.auth.signUp(
+    {
+      email,
+      password,
+      options: { data: { fullName, avatar: "" } },
+    }
+  );
 
-  return data;
+  if (createUserError) throw new Error(createUserError.message);
+
+  await supabase.auth.setSession(currentSession.session);
+
+  // Get the user data from signup to create a new profile and add role
+
+  const { user_metadata: user, id } = userData.user;
+
+  const userProfile = {
+    fullName: user.fullName,
+    avatar: user.avatar,
+    email: user.email,
+    userId: id,
+    isAdmin: role === "admin",
+  };
+
+  const { error: createProfileError } = await supabase
+    .from("profiles")
+    .insert([userProfile]);
+
+  if (createProfileError) throw new Error(createProfileError.message);
+
+  return userData;
 }
 
 export async function login({ email, password }) {
-  let { data, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -70,4 +95,12 @@ export async function logout() {
   const { error } = await supabase.auth.signOut();
 
   if (error) throw new Error("Error logging out");
+}
+
+export async function getAllUsers() {
+  const { data: users, error } = await supabase.from("profiles").select("*");
+
+  if (error) throw new Error("Failed to fetch all users");
+
+  return users;
 }

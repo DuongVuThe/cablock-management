@@ -10,8 +10,9 @@ import GlobalStyles from "./styles/GlobalStyles";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import Login from "./pages/Login";
 import AppLayout from "./ui/AppLayout";
-import PageNotFound from "./pages/PageNotFound";
 
+const Device = lazy(() => import("./pages/Device"));
+const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Bookings = lazy(() => import("./pages/Bookings"));
 const Cabins = lazy(() => import("./pages/Cabins"));
@@ -58,6 +59,7 @@ function App() {
             </Route>
             <Route path="login" element={<Login />} />
             <Route path="*" element={<PageNotFound />} />
+            <Route path="device" element={<Device />} />
           </Routes>
         </BrowserRouter>
 

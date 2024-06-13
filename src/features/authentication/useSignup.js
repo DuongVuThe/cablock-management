@@ -10,6 +10,9 @@ export function useSignup() {
         "Account created. Please verify your account through your email address"
       );
     },
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 
   return { signup, isPending };

@@ -13,6 +13,8 @@ const FullPage = styled.div`
 `;
 
 function ProtectedRoute({ children }) {
+  const screenWidth = screen.width;
+
   const { isAuthenticated, isPending } = useUser();
 
   if (isPending)
@@ -21,6 +23,8 @@ function ProtectedRoute({ children }) {
         <Spinner />;
       </FullPage>
     );
+
+  if (screenWidth < 1400) return <Navigate to="/device" replace={true} />;
 
   if (!isAuthenticated) return <Navigate to="/login" replace={true} />;
 

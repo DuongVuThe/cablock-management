@@ -1,21 +1,27 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { useSignup } from "./useSignup";
 
 import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
-import { useSignup } from "./useSignup";
-
-// Email regex: /\S+@\S+\.\S+/
+import Select from "../../ui/Select";
+import SpinnerMini from "../../ui/SpinnerMini";
 
 function SignupForm() {
-  const { register, formState, getValues, handleSubmit, reset } = useForm();
+  const { register, formState, getValues, handleSubmit, reset, control } =
+    useForm();
   const { errors } = formState;
   const { signup, isPending } = useSignup();
 
-  function onSubmit({ fullName, email, password }) {
+  const roleOptions = [
+    { label: "Moderator", value: "mod" },
+    { label: "Admin", value: "admin" },
+  ];
+
+  function onSubmit({ fullName, email, password, role }) {
     signup(
-      { fullName, email, password },
+      { fullName, email, password, role },
       {
         onSettled: reset,
       }
@@ -79,8 +85,25 @@ function SignupForm() {
         />
       </FormRow>
 
+      <Controller
+        control={control}
+        rules={("role", { required: "Please select a role" })}
+        name="role"
+        render={({ field: { onChange, value, ref } }) => (
+          <FormRow label="Role" error={errors?.role?.message}>
+            <Select
+              onChange={onChange}
+              value={value}
+              ref={ref}
+              field="a role"
+              options={roleOptions}
+              id="role"
+            />
+          </FormRow>
+        )}
+      />
+
       <FormRow>
-        {/* type is an HTML attribute! */}
         <Button
           disabled={isPending}
           variation="secondary"
@@ -89,7 +112,9 @@ function SignupForm() {
         >
           Cancel
         </Button>
-        <Button disabled={isPending}>Create new user</Button>
+        <Button disabled={isPending}>
+          {isPending ? <SpinnerMini /> : "Create new user"}
+        </Button>
       </FormRow>
     </Form>
   );
