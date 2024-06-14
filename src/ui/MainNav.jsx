@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
+import { useUser } from "../features/authentication/useUser";
 import {
   HiOutlineCalendarDays,
   HiOutlineCog6Tooth,
@@ -8,6 +9,7 @@ import {
   HiOutlineHomeModern,
   HiOutlineUser,
 } from "react-icons/hi2";
+import Spinner from "./Spinner";
 
 const NavList = styled.ul`
   display: flex;
@@ -29,7 +31,6 @@ const StyledNavLink = styled(NavLink)`
     transition: all 0.3s;
   }
 
-  /* This works because react-router places the active class on the active NavLink */
   &:hover,
   &:active,
   &.active:link,
@@ -55,6 +56,10 @@ const StyledNavLink = styled(NavLink)`
 `;
 
 function MainNav() {
+  const { isPending, isAdmin } = useUser();
+
+  if (isPending) return <Spinner />;
+
   return (
     <nav>
       <NavList>
@@ -79,15 +84,17 @@ function MainNav() {
         <li>
           <StyledNavLink to="/users">
             <HiOutlineUser />
-            <span>Users</span>
+            <span>Staff</span>
           </StyledNavLink>
         </li>
-        <li>
-          <StyledNavLink to="/settings">
-            <HiOutlineCog6Tooth />
-            <span>Settings</span>
-          </StyledNavLink>
-        </li>
+        {isAdmin && (
+          <li>
+            <StyledNavLink to="/settings">
+              <HiOutlineCog6Tooth />
+              <span>Policies</span>
+            </StyledNavLink>
+          </li>
+        )}
       </NavList>
     </nav>
   );

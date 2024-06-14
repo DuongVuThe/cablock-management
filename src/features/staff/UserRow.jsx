@@ -1,9 +1,8 @@
+import { HiChevronUpDown } from "react-icons/hi2";
 import styled, { css } from "styled-components";
 import Table from "../../ui/Table";
-import { Avatar } from "../authentication/UserAvatar";
-import Button from "../../ui/Button";
 import Tag from "../../ui/Tag";
-import { HiChevronUpDown } from "react-icons/hi2";
+import { Avatar } from "../authentication/UserAvatar";
 
 const Text = styled.div`
   font-size: 1.6rem;
@@ -18,33 +17,8 @@ const Text = styled.div`
     `}
 `;
 
-const Role = styled.div`
-  font-size: 1.6rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-family: "Sono";
-
-  border-radius: var(--border-radius-sm);
-
-  width: fit-content;
-  padding: 1rem 2rem;
-  border-radius: 10px;
-  border: none;
-
-  &:hover {
-    background-color: var(--color-grey-500);
-    cursor: pointer;
-  }
-
-  ${(props) =>
-    props.role === "admin" &&
-    css`
-      color: var(--color-yellow-700);
-    `}
-`;
-
 function UserRow({ user }) {
-  const { fullName, email, avatar, isAdmin, userId } = user;
+  const { fullName, email, avatar, is_admin: isAdmin, user_id: userId } = user;
 
   const role = isAdmin ? "admin" : "staff";
 
@@ -64,7 +38,7 @@ function UserRow({ user }) {
       <Tag role={role} type={roleToTagName[role]}>
         <p>{role}</p>
 
-        <HiChevronUpDown />
+        {/* <HiChevronUpDown /> */}
       </Tag>
       <Text type="fade">{userId}</Text>
     </Table.Row>

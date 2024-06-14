@@ -11,5 +11,6 @@ export function useUser() {
     isPending,
     user,
     isAuthenticated: user?.role === "authenticated",
+    isAdmin: user?.isAdmin ?? false,
   };
 }

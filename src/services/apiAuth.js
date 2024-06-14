@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import supabase, { supabaseUrl } from "./supabase";
 
 export async function signup({ fullName, email, password, role }) {
@@ -12,9 +13,15 @@ export async function signup({ fullName, email, password, role }) {
     }
   );
 
-  if (createUserError) throw new Error(createUserError.message);
+  if (createUserError) {
+    console.log(createUserError.message);
+    throw new Error(createUserError.message);
+  }
 
-  await supabase.auth.setSession(currentSession.session);
+  // Set back the session after signup
+  const { error: setSessionError } = await supabase.auth.setSession(
+    currentSession.session
+  );
 
   // Get the user data from signup to create a new profile and add role
 
@@ -24,15 +31,24 @@ export async function signup({ fullName, email, password, role }) {
     fullName: user.fullName,
     avatar: user.avatar,
     email: user.email,
-    userId: id,
-    isAdmin: role === "admin",
+    user_id: id,
+    is_admin: role === "admin",
   };
 
+  if (setSessionError) {
+    console.log(setSessionError.message);
+    throw new Error(setSessionError.message);
+  }
+
+  // Create a profile for the user
   const { error: createProfileError } = await supabase
     .from("profiles")
     .insert([userProfile]);
 
-  if (createProfileError) throw new Error(createProfileError.message);
+  if (createProfileError) {
+    console.log(createProfileError.message);
+    throw new Error(createProfileError.message);
+  }
 
   return userData;
 }
@@ -57,7 +73,15 @@ export async function getCurrentUser() {
 
   if (error) throw new Error(error.message);
 
-  return data.user;
+  const token = session.session.access_token;
+
+  const decodedToken = jwtDecode(token);
+
+  console.log(decodedToken);
+
+  const isAdmin = decodedToken.user_metadata.admin ?? false;
+
+  return isAdmin ? { ...data.user, isAdmin } : data.user;
 }
 
 export async function updateCurrentUser({ password, fullName, avatar }) {
